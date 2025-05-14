@@ -44,6 +44,16 @@
     h2 {
       text-align: center;
     }
+    .label {
+      font-weight: bold;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+    .hint {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 10px;
+    }
     .input-group {
       display: flex;
       gap: 10px;
@@ -82,30 +92,32 @@
   <div class="container">
     <h2>Construa sua pesquisa de vagas (LinkedIn)</h2>
 
+    <div class="label">Palavras-chave desejadas</div>
+    <div class="hint">Usa operador <strong>OR</strong>. Exemplo: AdOps <strong>OR</strong> "Ad Operations"</div>
     <div id="positiveInputs">
       <div class="input-group">
-        <input type="text" placeholder="Cargo que busca">
+        <input type="text" placeholder="Palavra-chave positiva">
       </div>
     </div>
-    <button onclick="addInput('positive')">+ Adicionar outro cargo (Opcional)</button>
+    <button onclick="addInput('positive')">+ Adicionar palavra-chave (OR)</button>
 
-    <hr>
-
+    <div class="label">Palavras obrigatórias</div>
+    <div class="hint">Todas devem aparecer na vaga. Usa operador <strong>AND</strong> com grupo <strong>OR</strong> entre elas. Exemplo: (Programática <strong>OR</strong> Programmatic)</div>
     <div id="mustHaveInputs">
       <div class="input-group">
-        <input type="text" placeholder="Palavra obrigatória (AND)">
+        <input type="text" placeholder="Palavra obrigatória (AND entre grupo de OR)">
       </div>
     </div>
-    <button onclick="addInput('mustHave')">+ Adicionar palavra obrigatória (AND)</button>
+    <button onclick="addInput('mustHave')">+ Adicionar palavra obrigatória</button>
 
-    <hr>
-
+    <div class="label">Palavras para excluir</div>
+    <div class="hint">Usa operador <strong>NOT</strong>. Exemplo: NOT Estágio</div>
     <div id="negativeInputs">
       <div class="input-group">
         <input type="text" placeholder="Palavra-chave negativa">
       </div>
     </div>
-    <button onclick="addInput('negative')">- Adicionar exclusão (NOT)</button>
+    <button onclick="addInput('negative')">- Adicionar exclusão</button>
 
     <button onclick="gerarQuery()" style="margin-top:20px; width:100%">Gerar Query</button>
 
@@ -124,7 +136,7 @@
       div.className = 'input-group';
       div.innerHTML = `<input type="text" placeholder="${
         type === 'positive' ? 'Palavra-chave positiva' :
-        type === 'mustHave' ? 'Palavra obrigatória (AND)' :
+        type === 'mustHave' ? 'Palavra obrigatória (AND entre grupo de OR)' :
         'Palavra-chave negativa'}">`;
       container.appendChild(div);
     }
@@ -145,11 +157,15 @@
         .filter(Boolean);
 
       const positivosQuery = positivos.length > 1 ? `(${positivos.join(' OR ')})` : positivos.join('');
-      const obrigatoriosQuery = obrigatorios.map(term => `AND ${term}`).join(' ');
+      const obrigatoriosQuery = obrigatorios.length > 1 ? `(${obrigatorios.join(' OR ')})` : obrigatorios.join('');
       const negativosQuery = negativos.map(term => `NOT ${term}`).join(' ');
 
-      const query = `${positivosQuery} ${obrigatoriosQuery} ${negativosQuery}`.trim();
-      document.getElementById('queryOutput').value = query;
+      let query = '';
+      if (positivosQuery) query += positivosQuery;
+      if (obrigatoriosQuery) query += (query ? ' AND ' : '') + obrigatoriosQuery;
+      if (negativosQuery) query += ' ' + negativosQuery;
+
+      document.getElementById('queryOutput').value = query.trim();
     }
 
     function copiarQuery() {
