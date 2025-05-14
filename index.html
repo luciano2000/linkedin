@@ -62,7 +62,16 @@
         <input type="text" placeholder="Palavra-chave positiva">
       </div>
     </div>
-    <button onclick="addInput('positive')">+ Adicionar palavra-chave</button>
+    <button onclick="addInput('positive')">+ Adicionar palavra-chave (OR)</button>
+
+    <hr>
+
+    <div id="mustHaveInputs">
+      <div class="input-group">
+        <input type="text" placeholder="Palavra obrigatória (AND)">
+      </div>
+    </div>
+    <button onclick="addInput('mustHave')">+ Adicionar palavra obrigatória (AND)</button>
 
     <hr>
 
@@ -71,7 +80,7 @@
         <input type="text" placeholder="Palavra-chave negativa">
       </div>
     </div>
-    <button onclick="addInput('negative')">- Adicionar exclusão</button>
+    <button onclick="addInput('negative')">- Adicionar exclusão (NOT)</button>
 
     <button onclick="gerarQuery()" style="margin-top:20px; width:100%">Gerar Query</button>
 
@@ -80,10 +89,17 @@
 
   <script>
     function addInput(type) {
-      const container = document.getElementById(type === 'positive' ? 'positiveInputs' : 'negativeInputs');
+      const container = document.getElementById(
+        type === 'positive' ? 'positiveInputs' :
+        type === 'mustHave' ? 'mustHaveInputs' :
+        'negativeInputs'
+      );
       const div = document.createElement('div');
       div.className = 'input-group';
-      div.innerHTML = `<input type="text" placeholder="${type === 'positive' ? 'Palavra-chave positiva' : 'Palavra-chave negativa'}">`;
+      div.innerHTML = `<input type="text" placeholder="${
+        type === 'positive' ? 'Palavra-chave positiva' :
+        type === 'mustHave' ? 'Palavra obrigatória (AND)' :
+        'Palavra-chave negativa'}">`;
       container.appendChild(div);
     }
 
@@ -91,15 +107,18 @@
       const positivos = Array.from(document.querySelectorAll('#positiveInputs input'))
         .map(input => input.value.trim())
         .filter(Boolean);
-
+      const obrigatorios = Array.from(document.querySelectorAll('#mustHaveInputs input'))
+        .map(input => input.value.trim())
+        .filter(Boolean);
       const negativos = Array.from(document.querySelectorAll('#negativeInputs input'))
         .map(input => input.value.trim())
         .filter(Boolean);
 
       const positivosQuery = positivos.length > 1 ? `(${positivos.join(' OR ')})` : positivos.join('');
+      const obrigatoriosQuery = obrigatorios.map(term => `AND ${term}`).join(' ');
       const negativosQuery = negativos.map(term => `NOT ${term}`).join(' ');
 
-      const query = `${positivosQuery} ${negativosQuery}`.trim();
+      const query = `${positivosQuery} ${obrigatoriosQuery} ${negativosQuery}`.trim();
       document.getElementById('queryOutput').value = query;
     }
   </script>
