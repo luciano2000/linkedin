@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Construa queries booleanas para o LinkedIn Jobs de forma visual e intuitiva.">
+  <meta property="og:title" content="QueryDin — Gerador de Query LinkedIn">
+  <meta property="og:description" content="Monte pesquisas booleanas para o LinkedIn Jobs em segundos.">
+  <meta property="og:type" content="website">
+  <title>QueryDin — Gerador de Query LinkedIn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
+            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+          </svg>
+        </div>
+        <span class="brand-name">QueryDin</span>
+      </div>
+      <p class="brand-sub">Gerador de queries booleanas para o LinkedIn Jobs</p>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="layout">
+
+      <!-- ── Builder ─────────────────────────────────── -->
+      <section class="builder">
+
+        <!-- OR -->
+        <div class="card">
+          <div class="card-head">
+            <span class="chip chip-or">OR</span>
+            <div>
+              <h2 class="card-title">Palavras-chave desejadas</h2>
+              <p class="card-hint">Pelo menos uma deve aparecer na vaga</p>
+            </div>
+          </div>
+          <div class="tag-field" id="positiveField">
+            <div class="tag-list" id="positiveTags"></div>
+            <input class="tag-input" id="positiveInput" type="text"
+                   placeholder="Digite e pressione Enter ↵" autocomplete="off">
+          </div>
+        </div>
+
+        <!-- AND -->
+        <div class="card">
+          <div class="card-head">
+            <span class="chip chip-and">AND</span>
+            <div>
+              <h2 class="card-title">Conceitos obrigatórios</h2>
+              <p class="card-hint">Cada linha é um conceito (AND entre eles). Adicione sinônimos na mesma linha (OR)</p>
+            </div>
+          </div>
+          <div id="andGroups"></div>
+          <button class="btn-add-group" onclick="addGroup()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar conceito
+          </button>
+        </div>
+
+        <!-- NOT -->
+        <div class="card">
+          <div class="card-head">
+            <span class="chip chip-not">NOT</span>
+            <div>
+              <h2 class="card-title">Excluir termos</h2>
+              <p class="card-hint">Vagas com esses termos serão removidas dos resultados</p>
+            </div>
+          </div>
+          <div class="tag-field" id="negativeField">
+            <div class="tag-list" id="negativeTags"></div>
+            <input class="tag-input" id="negativeInput" type="text"
+                   placeholder="Digite e pressione Enter ↵" autocomplete="off">
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── Preview ─────────────────────────────────── -->
+      <aside class="preview">
+        <div class="preview-card">
+          <div class="preview-head">
+            <span class="preview-label">Query gerada</span>
+            <span class="char-count" id="charCount"></span>
+          </div>
+          <div class="code-box">
+            <pre class="code-text" id="queryOutput"><span class="code-empty">Sua query aparecerá aqui conforme você adiciona palavras-chave...</span></pre>
+          </div>
+          <div class="action-row">
+            <button class="btn btn-copy" id="copyBtn" onclick="copyQuery()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copiar
+            </button>
+            <button class="btn btn-linkedin" id="searchBtn" onclick="openLinkedIn()" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Buscar no LinkedIn
+            </button>
+          </div>
+          <div class="legend">
+            <p class="legend-title">Referência rápida</p>
+            <ul class="legend-list">
+              <li><span class="chip chip-or chip-xs">OR</span> Qualquer uma das palavras</li>
+              <li><span class="chip chip-and chip-xs">AND</span> Todos os conceitos presentes</li>
+              <li><span class="chip chip-not chip-xs">NOT</span> Exclui vagas com esses termos</li>
+              <li><span class="icon-quote">"&nbsp;"</span> Frases com espaço recebem aspas automaticamente</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© AD TEC Soluções em Tecnologia e Publicidade Ltda.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
